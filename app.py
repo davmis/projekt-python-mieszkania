@@ -2,6 +2,7 @@ import streamlit as st
 import zakladka_mapa
 import zakladka_wykresy
 import zakladka_kalkulator
+import zakladka_dane
 
 st.set_page_config(page_title="Projekt python", layout="wide")
 st.title("Integracja i wizualizacja średnich cen mieszkań na mapie na podstawie danych z GUS")
@@ -19,6 +20,7 @@ elif wybor == "Kalkulator":
     modul_kalkulator = zakladka_kalkulator.Kalkulator()
     modul_kalkulator.wyswietl_kalkulator()
 elif wybor == "Dane":
-    st.info("cuming soon - dodaj tabelki z mozliwoscia pobrania (wszystkie dane ktore uzywamy)")
+    modul_danych = zakladka_dane.Dane()
+    modul_danych.wyswietl_zakladke_dane()
 else:
     st.info("chuj wie co tu bedzie, ale na pewno nie to :)")
