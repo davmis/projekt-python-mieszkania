@@ -8,7 +8,7 @@ class Kalkulator:
 
     def wyswietl_kalkulator(self):
         st.header("Kalkulator Dostępności mieszkań")
-        st.write("Na co Cię stać.")
+        st.write("Sprawdźmy, ile lat oszdzędzania Cię czeka.")
         #dzielimy ekran na dwie kolumny (lewa na wpisywanie rzeczy, a prawa na wyniki)
         col1, col2 = st.columns(2)
         with col1:
@@ -26,13 +26,18 @@ class Kalkulator:
             )
             st.caption(f"Średnia w tym regionie to ok. {sr_zarobki:,.0f} zł")
             procent = st.slider("Ile procent swojej pensji odkładasz co miesiąc?", 0,100,20)
-            lata=st.number_input("Przez ile lat chcesz oszczędzać?", min_value=1, max_value = 40, value=5)
+            docelowy_metraz = st.number_input(
+                "Ile metrów kwadratowych chcesz kupić?", 
+                min_value=15, 
+                max_value=300, 
+                value=50, 
+                step=5
+            )
             #tutaj juz wchodzi matematyka 
             #wyciagamy cene za m2 dla pojedynczych wojwodztw
             cena_m2 = self.df_ceny[self.df_ceny['Wojewodztwo']==wojewodztwo][self.rok].values[0]
-            miesieczne_oszczednosci = pensja*(procent/100)
-            calkowite_oszczednosci = miesieczne_oszczednosci*12*lata
-            metraz = (calkowite_oszczednosci / cena_m2) if cena_m2 > 0 else 0
+            koszt_calkowity = cena_m2 * docelowy_metraz
+            miesieczne_oszczednosci = pensja * (procent / 100)
 
         with col2:
             st.subheader("Twoje wyniki: ")
@@ -40,17 +45,18 @@ class Kalkulator:
             if miesieczne_oszczednosci ==0:
                 st.error("Z gówna bata nie ukręcisz, zarabiaj wiecej albo odkladaj wiecej")
             else:
-                st.metric("Średnia cena m2 w tym regionie", f"{cena_m2:,.0f} PLN")
-                st.metric(
-                    f"Twój kapitał po {lata} latach",
-                    f"{calkowite_oszczednosci:,.0f} PLN",
-                    delta=f"Odkładasz {miesieczne_oszczednosci:,.0f} zł/msc"
-                )
-                st.markdown(f"### Za gotówkę kupisz: **{metraz:,.2f} m2**")
-
-                if metraz<25:
-                    st.error(f"Bądźmy szczerzy. {metraz:,.1f} m2 to patokawalerka")
-                elif metraz<45:
-                    st.warning(f"{metraz:,.1f} m2 to ciasna kawalerka!")
+                # Wyliczamy ile lat zajmie uzbieranie pełnej kwoty
+                lata_oszczedzania = koszt_calkowity / (miesieczne_oszczednosci * 12)
+                
+                st.metric("Całkowity koszt mieszkania", f"{koszt_calkowity:,.0f} PLN", delta=f"Cena za m²: {cena_m2:,.0f} zł", delta_color="off")
+                st.metric("Odkładasz miesięcznie", f"{miesieczne_oszczednosci:,.0f} PLN")
+                
+                st.markdown(f"### Czas zbierania: **{lata_oszczedzania:.1f} lat**")
+                
+                # diagnoza czasu oszczędzania
+                if lata_oszczedzania > 35:
+                    st.error(f"Bądźmy szczerzy. {lata_oszczedzania:.1f} lat oszczędzania to wyrok. Kupisz to mieszkanie na emeryturze albo wcale, a inflacja i tak Cię pożre. Zmień metraż, poszukaj lepszej pracy albo tańszego województwa.")
+                elif lata_oszczedzania > 15:
+                    st.warning(f"⚠️ {lata_oszczedzania:.1f} lat to kupa czasu i zamrożony kapitał. Zastanów się nad mniejszym metrażem na start, żeby szybciej być na swoim.")
                 else:
-                    st.success(f"{metraz:,.1f} m2 to juz calkiem niezly rozmiar")
+                    st.success(f"{lata_oszczedzania:.1f} lat to całkiem realny horyzont! Trzymaj się planu, zaciskaj zęby, a wkrótce odbierzesz klucze bez kredytu na karku.")
