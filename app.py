@@ -28,3 +28,4 @@ elif wybor == "Dane":
     modul_danych.wyswietl_zakladke_dane()
 else:
     st.info("chuj wie co tu bedzie, ale na pewno nie to :)")
+    

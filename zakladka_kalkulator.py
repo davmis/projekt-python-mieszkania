@@ -51,6 +51,7 @@ class Kalkulator:
                 st.metric("Całkowity koszt mieszkania", f"{koszt_calkowity:,.0f} PLN", delta=f"Cena za m²: {cena_m2:,.0f} zł", delta_color="off")
                 st.metric("Odkładasz miesięcznie", f"{miesieczne_oszczednosci:,.0f} PLN")
                 
+                
                 st.markdown(f"### Czas zbierania: **{lata_oszczedzania:.1f} lat**")
                 
                 # diagnoza czasu oszczędzania
